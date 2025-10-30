@@ -21,6 +21,7 @@
             margin: 0;
             /* Ensures body doesn't interfere with quote-box's movement */
             overflow: hidden; 
+            position: relative; /* Needed for the absolute positioned footer */
         }
         
         /* Define fade animation for quotes */
@@ -70,6 +71,11 @@
         </footer>
 
     </div>
+
+    <!-- Page Footer with Copyright Notice -->
+    <footer class="absolute bottom-4 left-0 right-0 text-center text-sm text-gray-600 opacity-75">
+        &copy; 2025 AYUSH NANDI Friendship Day Project
+    </footer>
 
     <script>
         // --- THE FRIENDSHIP QUOTES ARRAY ---
