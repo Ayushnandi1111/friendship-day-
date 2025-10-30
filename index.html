@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Friendship Day - Quote Generator</title>
+    <!-- Load Tailwind CSS for beautiful, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a festive look */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f7f1e3 0%, #ffeaa7 100%); /* Soft Yellow/Cream Background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            margin: 0;
+            /* Ensures body doesn't interfere with quote-box's movement */
+            overflow: hidden; 
+        }
+        
+        /* Define fade animation for quotes */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        .fade-in {
+            opacity: 1;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        /* --- New CSS for the Slow Movement (Drift) --- */
+        @keyframes slow-drift {
+            0% { transform: translate(0px, 0px) rotate(0deg); }
+            50% { transform: translate(10px, -5px) rotate(0.2deg); } /* Gentle shift up and right */
+            100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+
+        #quote-box {
+            /* Apply the very slow, infinite, and alternating drift animation */
+            animation: slow-drift 30s infinite alternate ease-in-out;
+        }
+    </style>
+</head>
+<body class="selection:bg-pink-300 selection:text-white">
+
+    <div id="quote-box" class="w-full max-w-4xl p-8 md:p-12 lg:p-16 bg-white shadow-2xl rounded-3xl border-4 border-yellow-500 transform transition duration-500 hover:scale-[1.01]">
+        
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-yellow-600 mb-6 text-center tracking-tight">
+            Happy Friendship Day!
+        </h1>
+        <p class="text-center text-xl text-gray-700 mb-10 font-semibold">
+            Celebrating the 10 quintillion reasons we love our friends.
+        </p>
+
+        <!-- Quote Display Area -->
+        <blockquote id="quote-text" class="text-3xl sm:text-4xl font-light text-gray-800 italic text-center leading-relaxed mb-6 h-40 flex items-center justify-center">
+            "True friendship comes when the silence between two people is comfortable."
+        </blockquote>
+        
+        <!-- Source Display Area -->
+        <footer class="text-center">
+            <cite id="quote-source" class="text-xl font-bold text-pink-500 not-italic block mt-4">
+                — Dave Tyson
+            </cite>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- THE FRIENDSHIP QUOTES ARRAY ---
+        // We are using a large array of objects to store the quote and its source.
+        const quotes = [
+            {
+                quote: "True friendship comes when the silence between two people is comfortable.",
+                source: "Dave Tyson"
+            },
+            {
+                quote: "A single loyal friend is worth ten thousand relatives.",
+                source: "Euripides"
+            },
+            {
+                quote: "Friendship is the only cement that will ever hold the world together.",
+                source: "Woodrow Wilson"
+            },
+            {
+                quote: "The only way to have a friend is to be one.",
+                source: "Ralph Waldo Emerson"
+            },
+            {
+                quote: "A true friend is one who overlooks your failures and tolerates your success.",
+                source: "Doug Larson"
+            },
+            {
+                quote: "Friends are the family you choose.",
+                source: "Jess C. Scott"
+            },
+            {
+                quote: "I would rather walk with a friend in the dark, than alone in the light.",
+                source: "Helen Keller"
+            },
+            {
+                quote: "Friendship is born at that moment when one person says to another: 'What! You too? I thought I was the only one.'",
+                source: "C.S. Lewis"
+            },
+            {
+                quote: "A friend is someone who knows all about you and still loves you.",
+                source: "Elbert Hubbard"
+            },
+            {
+                quote: "Life is partly what we make it, and partly what it is made by the friends we choose.",
+                source: "Tennessee Williams"
+            },
+            {
+                quote: "Many people will walk in and out of your life, but only true friends will leave footprints in your heart.",
+                source: "Eleanor Roosevelt"
+            },
+            {
+                quote: "Best friends are the siblings God never gave us.",
+                source: "Mencius"
+            },
+            {
+                quote: "There is nothing on this earth more to be prized than true friendship.",
+                source: "Thomas Aquinas"
+            },
+            {
+                quote: "The greatest gift of life is friendship, and I have received it.",
+                source: "Hubert H. Humphrey"
+            },
+            {
+                quote: "Friends are those rare people who ask how we are and then wait to hear the answer.",
+                source: "Ed Cunningham"
+            },
+            {
+                quote: "Friendship is not something you learn in school. But if you haven't learned the meaning of friendship, you really haven't learned anything.",
+                source: "Muhammad Ali"
+            },
+            {
+                quote: "Friendship improves happiness, and abates misery, by doubling our joys, and dividing our grief.",
+                source: "Joseph Addison"
+            },
+            {
+                quote: "In the cookie of life, friends are the chocolate chips.",
+                source: "Unknown"
+            },
+            {
+                quote: "It is one of the blessings of old friends that you can afford to be stupid with them.",
+                source: "Ralph Waldo Emerson"
+            },
+            {
+                quote: "We'll be friends until forever, just you wait and see.",
+                source: "A.A. Milne (Winnie the Pooh)"
+            },
+            {
+                quote: "No distance of place or lapse of time can lessen the friendship of those who are thoroughly persuaded of each other's worth.",
+                source: "Robert Southey"
+            }
+            // You can add millions more quotes here!
+        ];
+
+        // --- JAVASCRIPT LOGIC ---
+
+        const quoteTextElement = document.getElementById('quote-text');
+        const quoteSourceElement = document.getElementById('quote-source');
+        let currentQuoteIndex = -1;
+
+        /**
+         * Selects a random quote that is different from the current one.
+         * @returns {object} A quote object {quote, source}.
+         */
+        function getRandomQuote() {
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * quotes.length);
+            } while (newIndex === currentQuoteIndex);
+            
+            currentQuoteIndex = newIndex;
+            return quotes[newIndex];
+        }
+
+        /**
+         * Displays the new quote with a smooth fade effect.
+         */
+        function displayNewQuote() {
+            // 1. Start fade-out by adding the class
+            quoteTextElement.classList.add('fade-out');
+            quoteSourceElement.classList.add('fade-out');
+
+            // Wait for the fade-out to complete (1500ms from CSS transition)
+            setTimeout(() => {
+                const newQuote = getRandomQuote();
+
+                // 2. Update the content while hidden
+                quoteTextElement.textContent = `"${newQuote.quote}"`;
+                quoteSourceElement.textContent = `— ${newQuote.source}`;
+
+                // 3. Remove fade-out and add fade-in to reveal
+                quoteTextElement.classList.remove('fade-out');
+                quoteSourceElement.classList.remove('fade-out');
+                
+                // Ensure fade-in state is active 
+                quoteTextElement.classList.add('fade-in');
+                quoteSourceElement.classList.add('fade-in');
+
+                // Clean up the temporary class after the transition
+                setTimeout(() => {
+                     quoteTextElement.classList.remove('fade-in');
+                     quoteSourceElement.classList.remove('fade-in');
+                }, 1500);
+
+
+            }, 1500); // Wait 1.5 seconds for fade-out
+        }
+
+        // Set the initial quote on load
+        window.onload = function() {
+            displayNewQuote(); // Display the first quote
+            
+            // Set the interval to shuffle quotes every 10 seconds (10000 milliseconds)
+            setInterval(displayNewQuote, 10000); 
+        };
+
+    </script>
+
+</body>
+</html>
